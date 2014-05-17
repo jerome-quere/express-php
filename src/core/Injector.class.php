@@ -29,6 +29,7 @@ namespace s2f;
 use \Exception as Exception;
 use \ReflectionFunction as ReflectionFunction;
 use \ReflectionClass as ReflectionClass;
+use \ReflectionMethod as ReflectionMethod;
 
 class Injector
 {
@@ -57,9 +58,21 @@ class Injector
     return call_user_func_array($fct, $injectArray);
   }
 
+  public function invokeMethod($injectArray, $locals = array())
+  {
+    if (sizeof($injectArray) == 2 && is_object($injectArray[0]))
+      $injectArray = $this->buildInjectArrayFromMethod($injectArray[0], $injectArray[1]);
+    $method = array_pop($injectArray);
+    $instance = array_pop($injectArray);
+    $injectArray[] = function () use ($instance, $method) {
+      call_user_func_array(array($instance, $method), func_get_args());
+    };
+    return $this->invoke($injectArray, $locals);
+  }
+
   public function instantiate($classname, $locals)
   {
-    $this->invoke($this->buildInjectArrayFromClassName($classname), $locals);
+    return $this->invoke($this->buildInjectArrayFromClassName($classname), $locals);
   }
 
   private function buildInjectArrayFromFunction($fn)
@@ -69,6 +82,17 @@ class Injector
     foreach ($reflexion->getParameters() as $param)
       $result[] = $param->name;
     $result[] = $fn;
+    return $result;
+  }
+
+  private function buildInjectArrayFromMethod($instance, $method)
+  {
+    $reflexion = new ReflectionMethod($instance, $method);
+    $result = array();
+    foreach ($reflexion->getParameters() as $param)
+      $result[] = $param->name;
+    $result[] = $instance;
+    $result[] = $method;
     return $result;
   }
 
