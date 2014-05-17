@@ -65,7 +65,7 @@ class Injector
     $method = array_pop($injectArray);
     $instance = array_pop($injectArray);
     $injectArray[] = function () use ($instance, $method) {
-      call_user_func_array(array($instance, $method), func_get_args());
+      return call_user_func_array(array($instance, $method), func_get_args());
     };
     return $this->invoke($injectArray, $locals);
   }
