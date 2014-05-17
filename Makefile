@@ -29,6 +29,7 @@ CORE_SRC_DIR	=	src/core/
 CORE_SRC_FILE	=	Injector.class.php				\
 			Module.class.php				\
 			s2f.class.php					\
+			Testor.class.php				\
 			index.php
 CORE_SRC	=	$(addprefix $(CORE_SRC_DIR), $(CORE_SRC_FILE))
 
