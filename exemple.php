@@ -9,13 +9,13 @@
  * RewriteRule ^.*$ /exemple.php [L]
  */
 
-require_once('s2f.phar');
-require_once('s2f-route.phar');
+require_once('express.phar');
+require_once('express-route.phar');
 
-use s2f\s2f as s2f;
+use express\express as express;
 
 //Create the application called app and load core and route dependency
-$app = s2f::module('app', ['core', 'route']);
+$app = express::module('app', ['core', 'route']);
 
 //This function is a callback handler for a specific route (see below)
 function handleRequest($response, $request, $routeParams, $testor)
@@ -53,6 +53,6 @@ $app->run(function ($testor) {
   });
 
 //This line is the execution entry point it MUST be called after everything else is set.
-s2f::run();
+express::run();
 
 ?>

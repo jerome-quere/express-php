@@ -25,7 +25,7 @@
  *
  */
 
-namespace s2f\route;
+namespace express\route;
 
 class Request
 {
@@ -50,7 +50,7 @@ class Request
     $tmp = array("GET" => self::GET, "POST" => self::POST, "PUT" => self::PUT, "DELETE" => self::DELETE);
     if (isset($tmp[$this->server['REQUEST_METHOD']]))
       return $tmp[$this->server['REQUEST_METHOD']];
-    throw new \Exception ("s2f::route::Request::getMethod: Unsuported method " . $this->server['REQUEST_METHOD']);
+    throw new \Exception ("express::route::Request::getMethod: Unsuported method " . $this->server['REQUEST_METHOD']);
   }
 
   public function getPath()

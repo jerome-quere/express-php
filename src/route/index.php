@@ -25,7 +25,7 @@
  *
  */
 
-namespace s2f\route;
+namespace express\route;
 
 require_once('RouteProviderServiceController.class.php');
 require_once('Mime.class.php');
@@ -33,7 +33,7 @@ require_once('Request.class.php');
 require_once('Response.class.php');
 
 
-$module = \s2f\s2f::module('route', ['core']);
+$module = \express\express::module('route', ['core']);
 
 $module->service('routeProvider', ['injector', function ($injector) {
       return new RouteProviderServiceController($injector);

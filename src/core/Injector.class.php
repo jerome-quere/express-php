@@ -25,7 +25,7 @@
  *
  */
 
-namespace s2f;
+namespace express;
 use \Exception as Exception;
 use \ReflectionFunction as ReflectionFunction;
 use \ReflectionClass as ReflectionClass;

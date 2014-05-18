@@ -25,7 +25,7 @@
  *
  */
 
-namespace s2f\route;
+namespace express\route;
 
 class Response
 {

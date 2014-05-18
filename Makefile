@@ -24,17 +24,17 @@
 
 RM		=	rm -rf
 
-CORE_NAME	=	s2f.phar
+CORE_NAME	=	express.phar
 CORE_SRC_DIR	=	src/core/
 CORE_SRC_FILE	=	Injector.class.php				\
 			Module.class.php				\
-			s2f.class.php					\
+			express.class.php				\
 			Testor.class.php				\
 			index.php
 CORE_SRC	=	$(addprefix $(CORE_SRC_DIR), $(CORE_SRC_FILE))
 
 
-ROUTE_NAME	=	s2f-route.phar
+ROUTE_NAME	=	express-route.phar
 ROUTE_SRC_DIR	=	src/route/
 ROUTE_SRC_FILE	=	Mime.class.php					\
 			Request.class.php				\

@@ -25,7 +25,7 @@
  *
  */
 
-namespace s2f;
+namespace express;
 
 class Testor
 {
@@ -35,7 +35,7 @@ class Testor
   public function __construct($var, $exception = null)
   {
     $this->value = $var;
-    $this->exception = ($exception) ? $exception : new \Exception("s2f::Testor: Test failed for value " . $this->value);
+    $this->exception = ($exception) ? $exception : new \Exception("express::Testor: Test failed for value " . $this->value);
   }
 
   public function getValue() { return $this->value; }
