@@ -1,55 +1,27 @@
 <?php
 
-/**
- * To make this exemple work properly you should create a '.htaccess' file such as :
- *
- * RewriteEngine On
- * RewriteCond %{REQUEST_FILENAME} !-d
- * RewriteCond %{REQUEST_FILENAME} !-f
- * RewriteRule ^.*$ /exemple.php [L]
- */
-
 require_once('express.phar');
-require_once('express-route.phar');
 
-use express\express as express;
+use express\express;
 
-//Create the application called app and load core and route dependency
-$app = express::module('app', ['core', 'route']);
+//Create the application called app and load core dependency
+$app = express::module('app', ['core']);
 
-//This function is a callback handler for a specific route (see below)
-function handleRequest($response, $request, $routeParams, $testor)
-{
-  //Test and get value of $routeParams->id in one line
-  $id = $testor($routeParams->id)->isNumeric()->isNotEmpty()->getValue();
+//Register a new service factory function
+$app->service('service1', function () {
+    return "Service 1";
+  });
 
-  //Send a json answer
-  $response->sendJson(array('user' => array('id' => $id)));
-}
-
-//This function is a callback that will be called on unknow route
-function notFound($response)
-{
-  //Set HTTP status code
-  $response->setCode(404);
-
-  //Send a response
-  $response->send("NOT FOUD");
-}
 
 //All the function registred with config will be called automaticly with injected dependency
-$app->config(function ($testor, $routeProvider) {
-
-    //Register a route for /user/:id that will be handled by handleRequest callback. the id path parameter will be accecible in the $routeParams injectable
-    $routeProvider->get('/user/:id', 'handleRequest');
-
-    //Set a fallback handler
-    $routeProvider->otherwise('notFound');
-
+$app->config(function ($service1) {
+    echo "CONFIG with $service1\n";
   });
 
 //All the function register with run will be called after all the config callback.
-$app->run(function ($testor) {
+$app->run(function ($testor, $service1) {
+    $v = $testor($service1, new Exception("Ooops"))->isString()->isNotEmpty()->getValue();
+    echo "RUN with $v";
   });
 
 //This line is the execution entry point it MUST be called after everything else is set.

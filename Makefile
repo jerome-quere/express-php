@@ -24,35 +24,20 @@
 
 RM		=	rm -rf
 
-CORE_NAME	=	express.phar
-CORE_SRC_DIR	=	src/core/
-CORE_SRC_FILE	=	Injector.class.php				\
+NAME		=	express.phar
+SRC_DIR		=	src
+SRC_FILE	=	Injector.class.php				\
 			Module.class.php				\
 			express.class.php				\
 			Testor.class.php				\
 			index.php
-CORE_SRC	=	$(addprefix $(CORE_SRC_DIR), $(CORE_SRC_FILE))
+SRC		=	$(addprefix $(SRC_DIR)/, $(SRC_FILE))
 
+all		:	$(NAME)
 
-ROUTE_NAME	=	express-route.phar
-ROUTE_SRC_DIR	=	src/route/
-ROUTE_SRC_FILE	=	Mime.class.php					\
-			Request.class.php				\
-			Response.class.php				\
-			RouteProviderServiceController.class.php	\
-			index.php
-ROUTE_SRC	=	$(addprefix $(ROUTE_SRC_DIR), $(ROUTE_SRC_FILE))
-
-
-all		:	$(CORE_NAME) $(ROUTE_NAME)
-
-$(CORE_NAME)	:
-			phar pack -f $(CORE_NAME) -l 2 $(CORE_SRC)
-
-$(ROUTE_NAME)	:
-			phar pack -f $(ROUTE_NAME) -l 2 $(ROUTE_SRC)
-
+$(NAME)		:	$(SRC)
+			phar pack -f $(NAME) -c auto -l 1 $(SRC)
 clean		:
-			$(RM) $(CORE_NAME) $(ROUTE_NAME)
+			$(RM) $(NAME)
 
 re		:	clean all
