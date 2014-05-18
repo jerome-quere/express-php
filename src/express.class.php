@@ -25,10 +25,10 @@
  *
  */
 
-namespace s2f;
+namespace express;
 use \Exception as Exception;
 
-class s2f
+class express
 {
   static private $modules = array();
 

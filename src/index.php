@@ -1,13 +1,13 @@
 <?php
 
-namespace s2f;
+namespace express;
 
-require_once('s2f.class.php');
+require_once('express.class.php');
 require_once('Module.class.php');
 require_once('Injector.class.php');
 require_once('Testor.class.php');
 
-$core = s2f::module('core', []);
+$core = express::module('core', []);
 
 $core->service('testor', [function () {
       return new TestorServiceController();
