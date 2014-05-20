@@ -53,7 +53,7 @@ class Injector
     $fct = array_pop($injectArray);
     foreach ($injectArray as $idx=>$value)
       {
-	$injectArray[$idx] = $this->getService($value, $locals);
+	$injectArray[$idx] = $this->get($value, $locals);
       }
     return call_user_func_array($fct, $injectArray);
   }
@@ -116,7 +116,7 @@ class Injector
     return $result;
   }
 
-  private function getService($name, $locals)
+  public function get($name, $locals = array())
   {
     if (isset($locals[$name]))
       return $locals[$name];

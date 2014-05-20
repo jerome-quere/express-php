@@ -19,8 +19,7 @@ $app->config(function ($service1) {
   });
 
 //All the function register with run will be called after all the config callback.
-$app->run(function ($testor, $service1) {
-    $v = $testor($service1, new Exception("Ooops"))->isString()->isNotEmpty()->getValue();
+$app->run(function ($service1) {
     echo "RUN with $v";
   });
 

@@ -9,8 +9,4 @@ require_once('Testor.class.php');
 
 $core = express::module('core', []);
 
-$core->service('testor', [function () {
-      return new TestorServiceController();
-    }]);
-
 ?>
