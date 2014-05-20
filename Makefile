@@ -29,14 +29,13 @@ SRC_DIR		=	src
 SRC_FILE	=	Injector.class.php				\
 			Module.class.php				\
 			express.class.php				\
-			Testor.class.php				\
 			index.php
 SRC		=	$(addprefix $(SRC_DIR)/, $(SRC_FILE))
 
 all		:	$(NAME)
 
 $(NAME)		:	$(SRC)
-			phar pack -f $(NAME) -c auto -l 1 $(SRC)
+			phar pack -f $(NAME) -c auto -l 1  $(SRC)
 clean		:
 			$(RM) $(NAME)
 
