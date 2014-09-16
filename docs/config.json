@@ -1,0 +1,15 @@
+{
+    "title": "express-php",
+    "tagline": "A lightweight php framework with dependency injection",
+    "docs_path": "docs",
+    "theme": "daux-navy",
+    "template": "default",
+    "float": false,
+    "date_modified": true,
+    "repo": "jerome-quere/express-php",
+    "twitter": ["jeromequere"],
+    "links" : {
+	"GitHub Repo": "https://github.com/jerome-quere/express-php",
+	"Made by Jerome Quere": "http://www.jeromequere.com"
+    }
+}

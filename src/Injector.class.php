@@ -79,7 +79,7 @@ class Injector
    * @param locals add new temporary services that can be inject in the given method.
    * @return the instance of classname created.
    */
-  public function instantiate($classname, $locals)
+  public function instantiate($classname, $locals = array())
   {
     return $this->invoke($this->buildInjectArrayFromClassName($classname), $locals);
   }
