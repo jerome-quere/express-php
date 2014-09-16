@@ -1,55 +1,75 @@
 <?php
 /*
+ * This file is part of the express-php package.
  *
- * The MIT License (MIT)
+ * (c) Jérôme Quéré <contact@jeromequere.com>
  *
- * Copyright (c) 2014 Jerome Quere
- *
- * Permission is hereby granted, free of charge, to any person obtaining a  copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including  without limitation the rights
- * to use, copy, modify, merge, publish,  distribute,  sublicense,  and/or  sell
- * copies  of  the  Software,  and  to  permit  persons  to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above  copyright  notice  and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS  PROVIDED "AS IS", WITHOUT  WARRANTY  OF ANY KIND, EXPRESS OR
- * IMPLIED,  INCLUDING  BUT NOT  LIMITED  TO THE  WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN  NO EVENT SHALL THE
- * AUTHORS OR  COPYRIGHT  HOLDERS  BE  LIABLE  FOR A NY CLAIM,  DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace express;
 use \Exception as Exception;
 
+/**
+ * This class contains all the bases API methods.
+ *
+ * @author Jérôme Quéré <contact@jeromequere.com>
+ */
 class express
 {
+
+  /**
+   * Array with all the registred modules.
+   * Use module name as keys.
+   */
   static private $modules = array();
 
-  public static function module($name, $dps)
+  /**
+   * This method register a new modules.
+   * @param name the name of the module you want to register.
+   * @param dependencies an array containing module name required by the new module.
+   * @return the instance of the new module.
+   */
+  public static function module($name, $dependencies)
   {
-    self::$modules[$name] = new Module($name, self::injector($dps));
+    if (!$name) throw new InvalidArgumentException('name must be a valid string string');
+    if (!is_array($dependencies)) throw new InvalidArgumentException('dependencies must be an array with module dependencies names');
+    if (isset(self::$modules[$name])) throw new InvalidArgumentException("The module $name already exist");
+
+    foreach ($dependencies as $key=>$dependency)
+      {
+	$module = self::getModule($dependency);
+	if ($module == null)
+	  throw new Exception("Could not resolve dependency $dependency");
+	$dependencies[$key] = $module;
+      }
+
+    self::$modules[$name] = new Module($name, $dependencies);
     return self::$modules[$name];
   }
 
-  public static function injector($deps)
+  /**
+   * This method return a injector object that handles all the dependencies injection mechanism.
+   * @param modules a list of modules name to use for the dependency injection.
+   * @return an instance of an injector linked with the given modules.
+   */
+  public static function injector($modules)
   {
     $dependencies = array();
-    foreach ($deps as $dp_name)
+    foreach ($modules as $name)
       {
-	if (($module = self::getModule($dp_name)) == null)
-	  throw new Exception(sprintf("Could not resolve dependency %s", $dp_name));
-	$dependencies[$dp_name] = $module;
+	if (($module = self::getModule($name)) == null)
+	  throw new Exception("Could not resolve dependency $name");
+	$dependencies[$name] = $module;
       }
     return new Injector($dependencies);
   }
 
+  /**
+   * This method start the express-php cycle. It SHOULD be called once.
+   * @return this to chain methods call.
+   */
   public static function run()
   {
     foreach (self::$modules as $module)
@@ -58,6 +78,11 @@ class express
       $module->runHooks();
   }
 
+  /**
+   * This method return a module with the given name.
+   * @param name the name of the module you want to get.
+   * @return the module with the given name or null if no mudule is found.
+   */
   private static function getModule($name)
   {
     if (isset(self::$modules[$name]))

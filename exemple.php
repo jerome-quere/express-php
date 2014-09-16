@@ -20,7 +20,7 @@ $app->config(function ($service1) {
 
 //All the function register with run will be called after all the config callback.
 $app->run(function ($service1) {
-    echo "RUN with $v";
+    echo "RUN with $service1\n";
   });
 
 //This line is the execution entry point it MUST be called after everything else is set.

@@ -1,99 +1,139 @@
 <?php
 /*
+ * This file is part of the express-php package.
  *
- * The MIT License (MIT)
+ * (c) Jérôme Quéré <contact@jeromequere.com>
  *
- * Copyright (c) 2014 Jerome Quere
- *
- * Permission is hereby granted, free of charge, to any person obtaining a  copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including  without limitation the rights
- * to use, copy, modify, merge, publish,  distribute,  sublicense,  and/or  sell
- * copies  of  the  Software,  and  to  permit  persons  to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above  copyright  notice  and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS  PROVIDED "AS IS", WITHOUT  WARRANTY  OF ANY KIND, EXPRESS OR
- * IMPLIED,  INCLUDING  BUT NOT  LIMITED  TO THE  WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN  NO EVENT SHALL THE
- * AUTHORS OR  COPYRIGHT  HOLDERS  BE  LIABLE  FOR A NY CLAIM,  DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace express;
 
+/**
+ * Express-php module class definition.
+ *
+ * @author Jérôme Quéré <contact@jeromequere.com>
+ */
 class Module
 {
   private $name;
-  private $injector;
+  private $dependencies;
+
   private $services;
   private $configHooks;
   private $runHooks;
 
-  public function __construct($name, $injector)
+  /**
+   * Construct a new module
+   * @warning This method should not be call directly use express::module instead.
+   * @param name the module name
+   * @param dependencies an array containing module name required by the new module.
+   */
+  public function __construct($name, $dependencies)
   {
     $this->name = $name;
-    $this->injector = $injector;
+    $this->dependencies = $dependencies;
+
     $this->services = array();
     $this->configHooks = array();
     $this->runHooks = array();
-
-    $this->injector->addModule($this);
   }
 
-  public function getName()
-  {
-    return $this->name;
-  }
-
+  /**
+   * Add a config hook
+   * @param injectArray a callback that will be called at config time.
+   * @return $this to chain methods call.
+   */
   public function config($injectArray)
   {
     $this->configHooks[] = $injectArray;
     return $this;
   }
 
+  /**
+   * Add a run hook
+   * @param injectArray a callback that will be called at run time.
+   * @return $this to chain methods call.
+   */
   public function run($injectArray)
   {
     $this->runHooks[] = $injectArray;
+    return $this;
   }
 
+  /**
+   * Register a new service in the module
+   * @param name the service name
+   * @para $injectArray a factory method that will be called once to lazy construct the service. \
+   * The methode must return the service instance.
+   * @return $this to chain methods call.
+   */
   public function service($name, $injectArray)
   {
     $this->services[$name] = array('instance' => null, 'factory' => $injectArray);
     return $this;
   }
 
+  /**
+   * Get a service by it's name. If the service is not yet instaciate it will call the factory method to create a new instance.
+   * If no service with the given name is found it will try to find it in the dependencies modules.
+   * @return the service instance or null if there is no service with the given name.
+   */
   public function getService($name)
   {
     if (isset($this->services[$name]) == false)
-      return null;
+      {
+	foreach ($this->dependencies as $dep)
+	  {
+	    $service = $dep->getService($name);
+	    if ($service)
+	      return $service;
+	  }
+	return null;
+      }
+
     if ($this->services[$name]['instance'] == null)
-      $this->services[$name]['instance'] = $this->injector->invoke($this->services[$name]['factory']);
+      {
+	$injector = $this->getInjector();
+	$this->services[$name]['instance'] = $injector->invoke($this->services[$name]['factory']);
+      }
     return $this->services[$name]['instance'];
   }
 
-  public function setInjector($injector)
-  {
-    $this->injector = $injector;
-  }
-
+  /**
+   * This method will call all the registred config hook.
+   * @return $this to chain methods call.
+   */
   public function configHooks()
   {
+    $injector = $this->getInjector();
     foreach ($this->configHooks as $hook)
-      $this->injector->invoke($hook);
+      $injector->invoke($hook);
+    return $this;
   }
 
+  /**
+   * This method will call all the registred run hook.
+   * @return $this to chain methods call.
+   */
   public function runHooks()
   {
+    $injector = $this->getInjector();
     foreach ($this->runHooks as $hook)
-      $this->injector->invoke($hook);
+      $injector->invoke($hook);
+    return $this;
   }
-}
 
+  /**
+   * This method return a new injector link with this module.
+   * @return the injector linked with this module
+   */
+  private function getInjector()
+  {
+    return express::injector(array($this->name));
+  }
+
+}
 
 ?>
